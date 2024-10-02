@@ -2,7 +2,7 @@ set nocompatible              " required
 filetype off                  " required
 set encoding=utf-8
 set clipboard=unnamedplus     " set yanked lines into global clipboard
-
+set rtp+=/opt/homebrew/opt/fzf
 
 " set the runtime path to include Vundle and initialize
 set rtp+=~/.vim/bundle/Vundle.vim
@@ -24,6 +24,8 @@ Plugin 'tpope/vim-fugitive'
 Plugin 'Lokaltog/powerline', {'rtp': 'powerline/bindings/vim/'}
 Plugin 'prettier/vim-prettier'
 Plugin 'alvan/vim-closetag'
+Plugin 'junegunn/fzf.vim'
+" Plugin 'tell-k/vim-autopep8'
 
 " Formatter
 Plugin 'google/vim-maktaba'
@@ -60,6 +62,11 @@ augroup html_settings
     autocmd BufNewFile,BufRead *.html set formatoptions+=t
 augroup END
 
+" Pythn PEP8 formatter
+" autocmd BufWritePre *.py execute ':Autopep8 --in-place'
+" let g:autopep8_on_save = 1
+
+
 " Extra functions and values
 " SimpylFold
 filetype plugin indent on    " Enable filetype detection and folding
@@ -88,6 +95,7 @@ nnoremap <leader>w <C-w>w
 nnoremap <leader>c :%y+<CR>
 nnoremap <leader>s :w<CR>:PrettierAsync<CR>
 nnoremap <leader>q ggVG
+nnoremap <leader>r :NERDTreeRefreshRoot<CR>
 " yank current line into clipboard
 nnoremap yy "+yy    
 " yank multiple lines into clipboard
@@ -98,6 +106,17 @@ function! YankToClipboard()
 endfunction
 " redifine yank call
 xnoremap y :<C-U>call YankToClipboard()<CR>
+
+" function for moving lines up and down (without visual mode)
+function! MoveLines(count, move_by, direction)
+        let l:current_line = line('.')
+	let l:target_line = a:direction == 'up' ? l:current_line - a:move_by - 1 : l:current_line + a:move_by
+ 	execute l:current_line . "," . l:current_line + a:count - 1 . "m" . l:target_line
+endfunction 	
+
+" map for moving up and down
+nnoremap <silent> mu :<C-u>call MoveLines(input("Lines to move: "), input("Move up by: "), 'up')<CR>
+nnoremap <silent> md :<C-u>call MoveLines(input("Lines to move: "), input("Move down by: "), 'down')<CR>
 
 " Backspace remove
 set backspace=indent,eol,start
